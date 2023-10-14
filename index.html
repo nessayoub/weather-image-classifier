@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload and Prediction</title>
+</head>
+<body>
+    <h1>Upload an Image for Prediction</h1>
+    <input type="file" id="imageInput" accept="image/*">
+    <button onclick="uploadImage()">Upload & Predict</button>
+    
+    <h2>Result:</h2>
+    <img id="resultImage" style="display: none; width: 300px;">
+    <p id="predictionText"></p>
+
+    <script>
+        function uploadImage() {
+            const input = document.getElementById('imageInput');
+            const resultImage = document.getElementById('resultImage');
+            const predictionText = document.getElementById('predictionText');
+            
+            const file = input.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                // Send image to server for prediction
+                fetch('http://localhost:8000/predict', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultImage.src = data.image_url;
+                    resultImage.style.display = 'block';
+                    predictionText.innerText = `Prediction: ${data.prediction}`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
